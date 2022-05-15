@@ -1,6 +1,8 @@
 import com.google.gson.Gson;
 import dao.Sql2oDepartmentDao;
+import dao.Sql2oEmployeeDao;
 import models.Department;
+import models.Employee;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
 
@@ -13,6 +15,7 @@ public class App {
         String connect = "jdbc:postgresql://localhost:5432/news_portal";
         Sql2o sql2o = new Sql2o(connect, "terry", "Terry4041*" );
         Sql2oDepartmentDao sql2oDepartmentDao = new Sql2oDepartmentDao(sql2o);
+        Sql2oEmployeeDao sql2oEmployeeDao = new Sql2oEmployeeDao(sql2o);
         Connection conn = sql2o.open();
         Gson gson = new Gson();
 
@@ -36,6 +39,29 @@ public class App {
         get("/departments/:id", "application/json", (request, response) -> {
             int departmentId = Integer.parseInt(request.params("id"));
             return gson.toJson(sql2oDepartmentDao.findById(departmentId));
+        });
+
+
+        //Create New Employee
+        post("/employee/new", "application/json", (request, response) -> {
+            Employee employee = gson.fromJson(request.body(), Employee.class);
+            sql2oEmployeeDao.add(employee);
+            response.status(200);
+            return gson.toJson(employee);
+        });
+
+
+        //List All Employees
+        get("/employees", "application/json", (request, response) -> {
+            List<Employee> employees = sql2oEmployeeDao.getAll();
+            response.status(200);
+            return gson.toJson(employees);
+        });
+
+        //Find Employee by Id
+        get("/employee/:id", "application/json", (request, response) -> {
+            int employeeId = Integer.parseInt(request.params("id"));
+            return gson.toJson(sql2oEmployeeDao.findById(employeeId));
         });
 
 
