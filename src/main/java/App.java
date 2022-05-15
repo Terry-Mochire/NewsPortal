@@ -17,7 +17,7 @@ public class App {
         Gson gson = new Gson();
 
         //Create New Department
-        post("/department/new", (request, response) -> {
+        post("/department/new", "application/json" ,(request, response) -> {
             Department department = gson.fromJson(request.body(), Department.class);
             sql2oDepartmentDao.add(department);
             response.status(200);
@@ -25,12 +25,18 @@ public class App {
         });
 
         //List All Departments
-        get("/departments", (request, response) -> {
+        get("/departments", "application/json",(request, response) -> {
             List<Department> list = sql2oDepartmentDao.getAll();
             response.status(200);
             return gson.toJson(list);
         });
 
+
+        // Find Department by id
+        get("/departments/:id", "application/json", (request, response) -> {
+            int departmentId = Integer.parseInt(request.params("id"));
+            return gson.toJson(sql2oDepartmentDao.findById(departmentId));
+        });
 
 
 
