@@ -16,6 +16,7 @@ public class App {
         Connection conn = sql2o.open();
         Gson gson = new Gson();
 
+        //Create New Department
         post("/department/new", (request, response) -> {
             Department department = gson.fromJson(request.body(), Department.class);
             sql2oDepartmentDao.add(department);
@@ -23,6 +24,7 @@ public class App {
             return gson.toJson(department);
         });
 
+        //List All Departments
         get("/departments", (request, response) -> {
             List<Department> list = sql2oDepartmentDao.getAll();
             response.status(200);
