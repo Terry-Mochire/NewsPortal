@@ -14,6 +14,7 @@ import static spark.Spark.*;
 
 public class App {
     public static void main(String[] args) {
+        port(1234);
         String connect = "jdbc:postgresql://localhost:5432/news_portal";
         Sql2o sql2o = new Sql2o(connect, "terry", "Terry4041*" );
         Sql2oDepartmentDao sql2oDepartmentDao = new Sql2oDepartmentDao(sql2o);
@@ -44,11 +45,21 @@ public class App {
             return gson.toJson(sql2oDepartmentDao.findById(departmentId));
         });
 
+        //Find all Employees in a Department
+        get("/departments/:departmentId/employees", "application/json", (request, response) -> {
+            int departmentId = Integer.parseInt(request.params("departmentId"));
+            return  gson.toJson(sql2oDepartmentDao.getAllEmployeesByDepartment(departmentId));
+        });
+
 
         //Create New Employee
-        post("/employee/new", "application/json", (request, response) -> {
+        post("/departments/:departmentId/employee/new", "application/json", (request, response) -> {
+            int departmentId = Integer.parseInt(request.params("departmentId"));
+            Department newDepartment = sql2oDepartmentDao.findById(departmentId);
             Employee employee = gson.fromJson(request.body(), Employee.class);
             sql2oEmployeeDao.add(employee);
+            employee.setDepartmentId(newDepartment.getId());
+            sql2oDepartmentDao.addEmployeeToDepartment(newDepartment, employee);
             response.status(200);
             return gson.toJson(employee);
         });

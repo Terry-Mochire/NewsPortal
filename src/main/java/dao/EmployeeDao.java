@@ -1,5 +1,6 @@
 package dao;
 
+import models.Department;
 import models.Employee;
 
 import java.util.List;
