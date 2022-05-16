@@ -50,11 +50,21 @@ public class Sql2oEmployeeDao implements EmployeeDao{
 
     @Override
     public void deleteById(int id) {
+        try(Connection con = sql2o.open()) {
+            String sql = "DELETE FROM employees WHERE id = :id;";
+            con.createQuery(sql)
+                    .addParameter("id", id)
+                    .executeUpdate();
+        }
 
     }
 
     @Override
     public void clearAll() {
+        try(Connection con = sql2o.open()){
+            String sql = "DELETE FROM employees;";
+            con.createQuery(sql).executeUpdate();
+        }
 
     }
 }
