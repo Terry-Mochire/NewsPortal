@@ -8,6 +8,11 @@ public class News {
     private int departmentId;
     private int id;
 
+    public News(String title, String content){
+        this.title=title;
+        this.content=content;
+    }
+
     public News (String title, String content, int departmentId){
         this.title = title;
         this.content = content;

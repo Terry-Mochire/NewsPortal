@@ -1,8 +1,10 @@
 import com.google.gson.Gson;
 import dao.Sql2oDepartmentDao;
 import dao.Sql2oEmployeeDao;
+import dao.Sql2oNewsDao;
 import models.Department;
 import models.Employee;
+import models.News;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
 
@@ -16,6 +18,7 @@ public class App {
         Sql2o sql2o = new Sql2o(connect, "terry", "Terry4041*" );
         Sql2oDepartmentDao sql2oDepartmentDao = new Sql2oDepartmentDao(sql2o);
         Sql2oEmployeeDao sql2oEmployeeDao = new Sql2oEmployeeDao(sql2o);
+        Sql2oNewsDao sql2oNewsDao = new Sql2oNewsDao(sql2o);
         Connection conn = sql2o.open();
         Gson gson = new Gson();
 
@@ -65,8 +68,31 @@ public class App {
         });
 
 
+        //Create News
+        post("/news/new", "application/json", (request, response) -> {
+            News news = gson.fromJson(request.body(), News.class);
+            sql2oNewsDao.add(news);
+            response.status(200);
+            return gson.toJson(news);
+        });
 
-        //Filtes
+
+        //List all News
+        get("/news", "application/json", (request, response) -> {
+            List<News> news = sql2oNewsDao.getall();
+            response.status(200);
+            return gson.toJson(news);
+        });
+
+        //List news per Department
+        get ("/news/:departmentId", "application/json", (request, response) -> {
+            int departmentId = Integer.parseInt(request.params("departmentId"));
+            return gson.toJson(sql2oNewsDao.getAllNewsByDepartment(departmentId));
+        });
+
+
+
+        //Filters
         after((request, response) -> {
             response.type("application/json");
         });
